@@ -62,3 +62,4 @@ C:/Users/alexandr.gurali/Documents/univer/3/2/tmps/Marketplace/Marketplace/obj/D
 /Users/alyasultan/Downloads/Marketplace/Marketplace/obj/Debug/net8.0/Marketplace.pdb
 /Users/alyasultan/Downloads/Marketplace/Marketplace/obj/Debug/net8.0/Marketplace.genruntimeconfig.cache
 /Users/alyasultan/Downloads/Marketplace/Marketplace/obj/Debug/net8.0/ref/Marketplace.dll
+/Users/alyasultan/Downloads/Marketplace/Marketplace/obj/Debug/net8.0/Marketplace.sourcelink.json

@@ -31,6 +31,22 @@ public class ECommerceController(IOrderService orderService) : ControllerBase
         new Product { Id = 3, Name = "Наушники", Price = 5000 },
         new Product { Id = 4, Name = "Клавиатура", Price = 3000 },
         new Product { Id = 5, Name = "Мышь", Price = 1500 },
+        new Product { Id = 6, Name = "Монитор", Price = 12000 },
+        new Product { Id = 7, Name = "Игровая консоль", Price = 35000 },
+        new Product { Id = 8, Name = "Внешний жесткий диск", Price = 4000 },
+        new Product { Id = 9, Name = "Планшет", Price = 18000 },
+        new Product { Id = 10, Name = "Смарт-часы", Price = 7000 },
+        new Product { Id = 11, Name = "Веб-камера", Price = 2500 },
+        new Product { Id = 12, Name = "Колонки", Price = 6000 },
+        new Product { Id = 13, Name = "Игровая мышь", Price = 4500 },
+        new Product { Id = 14, Name = "Коврик для мыши", Price = 800 },
+        new Product { Id = 15, Name = "USB-хаб", Price = 1200 },
+        new Product { Id = 16, Name = "Сетевой фильтр", Price = 1500 },
+        new Product { Id = 17, Name = "Беспроводные наушники", Price = 9000 },
+        new Product { Id = 18, Name = "Принтер", Price = 8000 },
+        new Product { Id = 19, Name = "Роутер", Price = 3000 },
+        new Product { Id = 20, Name = "Игровая клавиатура", Price = 6000 }
+        
     };
     private static readonly User TestUser = new User { Id = "0" };
     
@@ -54,7 +70,7 @@ public class ECommerceController(IOrderService orderService) : ControllerBase
     }
     
     [HttpPost("cart/{userId}/add/{productId}")]
-    public ActionResult AddToCart(string userId, int productId)
+    public ActionResult AddToCart(string userId, int productId, [FromBody] Product customProduct = null)
     {
         var product = _availableProducts.Find(p => p.Id == productId);
         if (product == null)
@@ -70,9 +86,11 @@ public class ECommerceController(IOrderService orderService) : ControllerBase
             _userCartHistory[userId] = new List<CartMemento>();
             
         _userCartHistory[userId].Add(cart.Save());
+
+        var productToAdd = customProduct ?? product;
         
-        cart.AddItem(product);
-        Logger.Instance.Log($"User {userId} added product {product.Name} in cart");
+        cart.AddItem(productToAdd);
+        Logger.Instance.Log($"User {userId} added product {productToAdd.Name} in cart");
         
         return Ok(cart.GetItems());
     }
@@ -252,6 +270,27 @@ public class ECommerceController(IOrderService orderService) : ControllerBase
     public ActionResult<IEnumerable<Order>> GetAllOrders()
     {
         return Ok(_orders.Values);
+    }
+    
+    [HttpPost("cart/{userId}/clear")]
+    public ActionResult ClearCart(string userId)
+    {
+        if (!_userCarts.ContainsKey(userId))
+        {
+            _userCarts[userId] = new Cart();
+        }
+
+        var cart = _userCarts[userId];
+        if (!_userCartHistory.ContainsKey(userId))
+        {
+            _userCartHistory[userId] = new List<CartMemento>();
+        }
+
+        _userCartHistory[userId].Add(cart.Save()); // Сохраняем состояние перед очисткой (для undo)
+        cart.Clear(); // Очищаем корзину
+        Logger.Instance.Log($"User {userId} cleared their cart");
+
+        return Ok();
     }
 }
 

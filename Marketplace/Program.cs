@@ -14,6 +14,14 @@ builder.Services.AddTransient<ProductIterator>(provider =>
     return new ProductIterator(catalog);
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+    });
+});
+
 builder.Services.AddTransient<IDeliveryService, ExternalCourierAdapter>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 
@@ -44,6 +52,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAll");
+app.UseRouting();
 
 app.UseAuthorization();
 

@@ -10,4 +10,5 @@ public class Cart
 
     public CartMemento Save() => new(_items);
     public void Restore(CartMemento memento) => _items = [..memento.SavedItems];
+    public void Clear() => _items.Clear();
 }
