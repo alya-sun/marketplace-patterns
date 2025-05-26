@@ -196,17 +196,24 @@ public class ECommerceController(IOrderService orderService) : ControllerBase
 
         orderService.PlaceOrder(placeOrderCommand);
         
-        // Strategy Pattern для оплаты
-        IPaymentStrategy paymentStrategy;
-        try 
+        // Strategy Pattern, Abstract Factory для оплаты
+        IPaymentFactory paymentFactory;
+        switch (paymentMethod.ToLower())
         {
-            paymentStrategy = PaymentFactory.Create(paymentMethod);
-        }
-        catch (ArgumentException)
-        {
-            return BadRequest("Неподдерживаемый метод оплаты");
+            case "apple":
+                paymentFactory = new ApplePaymentFactory();
+                break;
+            case "google":
+                paymentFactory = new GooglePaymentFactory();
+                break;
+            case "bonus":
+                paymentFactory = new BonusPaymentFactory();
+                break;
+            default:
+                return BadRequest("Неподдерживаемый метод оплаты");
         }
         
+        var paymentStrategy = paymentFactory.CreatePaymentStrategy();
         var paymentResult = paymentStrategy.Pay(order.TotalAmount);
         
         // Добавляем заказ в список и очищаем корзину пользователя
